@@ -1,70 +1,1224 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" style="overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amine&Shirts | متجر القمصان الفاخرة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Amine&Shirts | Dynamic Premium Apparel 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Playfair+Display:ital@0;1&family=Rubik+Bubbles&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-        * { font-family: 'Cairo', sans-serif; }
-        .product-card { transition: all 0.3s ease; cursor: pointer; }
-        .product-card:hover { transform: translateY(-8px); }
+        :root {
+            --brand-blue: #00d2ff;
+            --soft-blue-fade: rgba(0, 210, 255, 0.1);
+            --deep-midnight: #030712;
+            --premium-dark-blue: #020817;
+            --footer-bg-normal: #000000;
+            --footer-bg-collection: #ffffff;
+        }
+
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            overflow-x: hidden !important; 
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            width: 100% !important;
+            max-width: 100% !important;
+            color: #000000;
+            position: relative;
+            transition: background-color 0.4s ease;
+        }
+
+        body.all-collection-mode {
+            background-color: var(--premium-dark-blue);
+            color: #ffffff;
+        }
+
+        .brand-lockup-global { letter-spacing: 0.05em !important; }
+        .font-brand { font-family: 'Luckiest Guy', cursive; }
+        .font-ampersand { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; text-transform: lowercase; }
+        .font-shirts { font-family: 'Luckiest Guy', cursive; color: #ffffff !important; }
+        .bubble-font { font-family: 'Rubik Bubbles', cursive; }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            background: #000;
+            color: #fff;
+            padding: 15px 0;
+            transform: rotate(-2deg) scale(1.05);
+            z-index: 20;
+        }
+
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1100px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 100px;
+            z-index: 1000;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+        }
+
+        .floating-nav.nav-hidden {
+            transform: translate(-50%, -120px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .floating-nav .nav-title-text { color: #000000; transition: color 0.4s ease; }
+        .floating-nav .nav-shirts-text { color: #000000 !important; transition: color 0.4s ease; }
+        
+        body.all-collection-mode .floating-nav {
+            background: rgba(3, 7, 18, 0.85);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        body.all-collection-mode .floating-nav .nav-title-text { color: #ffffff; }
+        body.all-collection-mode .floating-nav .nav-shirts-text { color: #ffffff !important; }
+
+        .home-return-trigger {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1005;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        body:not(.all-collection-mode) .home-return-trigger {
+            color: #000000;
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .home-return-trigger.visible { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .home-return-trigger:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
+
+        .get-it-btn {
+            font-family: 'Luckiest Guy', cursive;
+            background: #000 !important;
+            color: #fff !important;
+            padding: 14px 24px;
+            border-radius: 20px;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            border: none !important;
+        }
+
+        .get-it-btn:hover { background: var(--brand-blue) !important; color: #000 !important; }
+        body.all-collection-mode .get-it-btn { background: #ffffff !important; color: #000000 !important; }
+        body.all-collection-mode .get-it-btn:hover { background: var(--brand-blue) !important; color: #000000 !important; }
+
+        .product-card { transition: transform 0.4s ease; }
+        .product-card .bg-gray-50 {
+            background-color: #f9fafb !important;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        body.all-collection-mode .product-card .bg-gray-50 {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .parallax-layer { will-change: transform; }
+
+        .footer-card {
+            background: var(--footer-bg-normal);
+            color: #ffffff;
+            border-radius: 68px 68px 0 0;
+            padding: 60px 52px calc(34px + env(safe-area-inset-bottom)) 52px;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            margin-bottom: 0 !important;
+        }
+
+        body.all-collection-mode .footer-card { background: var(--footer-bg-collection); color: #000000; }
+        body.all-collection-mode .footer-card .footer-main-title { color: #000000; }
+        body.all-collection-mode .footer-card .footer-shirts-text { color: #000000 !important; }
+
+        .kinetic-portal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .split-pane {
+            position: relative;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .pane-left { justify-content: flex-end; background: linear-gradient(135deg, #020617 0%, #030712 100%); }
+        .pane-right { justify-content: flex-start; background: linear-gradient(315deg, #090d16 0%, #030712 100%); }
+
+        .kinetic-word {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: clamp(80px, 14vw, 240px);
+            line-height: 0.8;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            will-change: transform;
+        }
+
+        .pane-left .kinetic-word { color: #ffffff; text-align: right; padding-right: 2px; }
+        .pane-right .kinetic-word { color: var(--brand-blue); text-align: left; padding-left: 2px; }
+        
+        #storefrontContent {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        .liquid-nav-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5000;
+            width: 100% !important;
+            max-width: 100%;
+            height: calc(74px + env(safe-area-inset-bottom)); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-bottom: env(safe-area-inset-bottom);
+            pointer-events: none;
+            background: transparent;
+            transition: background-color 0.4s ease, transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .liquid-nav-wrapper.match-footer { pointer-events: auto; background: var(--footer-bg-normal); }
+        body.all-collection-mode .liquid-nav-wrapper.match-footer { background: var(--footer-bg-collection); }
+
+        .liquid-container { filter: url('#liquid-bounce'); padding: 5px; pointer-events: auto; will-change: transform; }
+
+        .liquid-menu-base {
+            position: relative;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 64px;
+            height: 64px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+            will-change: width, height, transform;
+        }
+
+        body.all-collection-mode .liquid-menu-base { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.08); }
+        body.all-collection-mode #menuTriggerIcon svg { stroke: #000000; }
+
+        .trigger-icon-container { position: absolute; z-index: 20; display: flex; align-items: center; justify-content: center; }
+
+        .liquid-actions-layer {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .action-item {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 50px;
+        }
+
+        body.all-collection-mode .action-item { color: #000000 !important; }
+        .action-item:hover, .action-item.active { color: var(--brand-blue) !important; }
+        body.all-collection-mode .action-item:hover, body.all-collection-mode .action-item.active { color: #0055ff !important; }
+
+        .brands-dropdown {
+            position: absolute;
+            bottom: calc(76px + env(safe-area-inset-bottom)); 
+            background: rgba(64, 64, 64, 0.75) !important; 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 24px;
+            padding: 8px;
+            width: 180px;
+            max-height: 155px; 
+            overflow-y: auto;
+            scrollbar-width: none; 
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 5010;
+        }
+        
+        .brands-dropdown::-webkit-scrollbar { display: none !important; }
+        .brands-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .dropdown-item {
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #ffffff !important; 
+            border-radius: 14px;
+            transition: color 0.2s ease, background-color 0.2s ease;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.12) !important; color: var(--brand-blue) !important; }
+
+        .filter-deck-panel {
+            position: absolute;
+            bottom: calc(76px + env(safe-area-inset-bottom)); 
+            background: rgba(64, 64, 64, 0.75) !important; 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 24px;
+            padding: 12px;
+            width: 100%;
+            max-width: 360px;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 5005;
+            color: #ffffff !important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .filter-deck-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .deck-main-menu { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+
+        .deck-pill-btn {
+            width: 100%;
+            text-align: left;
+            padding: 12px 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #ffffff !important;
+            border-radius: 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+        .deck-pill-btn:hover { color: var(--brand-blue) !important; background: rgba(255, 255, 255, 0.12) !important; }
+
+        .deck-options-view { display: none; flex-direction: column; width: 100%; }
+
+        .view-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+
+        .back-arrow-btn {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .view-title { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #f3f4f6 !important; }
+        .options-list { display: flex; flex-direction: column; gap: 2px; }
+
+        .clean-option-item {
+            padding: 12px 14px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #ffffff !important;
+            border-radius: 14px;
+            transition: color 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+            text-align: left;
+        }
+        .clean-option-item:hover, .clean-option-item.active { color: var(--brand-blue) !important; background: rgba(255, 255, 255, 0.12) !important; }
+
+        .all-collection-matrix-hero {
+            position: relative;
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 40px;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #0d1b3e 0%, var(--premium-dark-blue) 70%);
+        }
+
+        #all-collection-context { opacity: 0; transition: opacity 0.3s ease; }
+
+        .order-modal-backdrop, .cart-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .order-modal-backdrop.active, .cart-modal-backdrop.active { opacity: 1; pointer-events: auto; }
+        
+        .order-card-container, .cart-card-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 680px;
+            border-radius: 36px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            transform: scale(0.9) translateY(30px);
+            will-change: transform, opacity;
+        }
+
+        .cart-card-container { max-height: calc(100vh - 40px); display: flex; flex-direction: column; }
+        .size-pill, .color-pill { cursor: pointer; transition: all 0.2s ease; }
+        .size-pill.active { background-color: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
+        .color-pill.active { border-color: #000000 !important; transform: scale(1.1); }
+        
+        .purchase-btn-main {
+            font-family: 'Luckiest Guy', cursive;
+            background: #000000 !important;
+            color: #ffffff !important;
+            transition: all 0.3s ease;
+        }
+        .purchase-btn-main:hover { background: var(--brand-blue) !important; color: #000000 !important; transform: translateY(-2px); }
+
+        #shop { padding-bottom: 60px; }
+        .cart-items-scroll-deck { flex: 1; overflow-y: auto; scrollbar-width: none; }
+        .cart-items-scroll-deck::-webkit-scrollbar { display: none; }
+
+        .logistics-input {
+            width: 100%;
+            background: #f3f4f6;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #000000;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .logistics-input:focus { background: #ffffff; border-color: var(--brand-blue); box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15); }
+        .logistics-select {
+            appearance: none;
+            background-image: url("data:image/svg+svg;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 12px;
+        }
+
+        .social-link-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        .social-link-icon:hover {
+            background: var(--brand-blue);
+            transform: scale(1.08);
+        }
+        body.all-collection-mode .social-link-icon {
+            background: rgba(255,255,255,0.08);
+        }
+        body.all-collection-mode .social-link-icon:hover {
+            background: var(--brand-blue);
+        }
+        .footer-card .social-link-icon {
+            background: rgba(255,255,255,0.1);
+        }
+        .footer-card .social-link-icon:hover {
+            background: var(--brand-blue);
+        }
+
+        /* Success Toast Styling */
+        .success-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 100000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+        }
     </style>
 </head>
 <body>
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
-        <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black text-2xl">A</div>
-                <div><h1 class="text-2xl font-black">AMINE<span class="text-blue-500">&amp;</span>SHIRTS</h1><p class="text-xs text-gray-500">متجر الملابس الفاخرة</p></div>
-            </div>
-            <button onclick="openCart()" class="relative bg-white shadow-md p-3 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3"></path></svg><span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 hidden items-center justify-center">0</span></button>
-        </div>
 
-        <div id="emptyState" class="text-center py-20"><div class="text-8xl mb-4">👕✨</div><h2 class="text-3xl font-bold text-gray-700 mb-2">المتجر فارغ حالياً!</h2><p class="text-gray-500">سيتم إضافة المنتجات قريباً</p></div>
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <defs>
+            <filter id="liquid-bounce">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Splash Entrance Portal -->
+    <div id="kineticPortal" class="kinetic-portal" style="display: flex;">
+        <div id="paneLeft" class="split-pane pane-left"><div class="kinetic-word" id="wordLeft">AM</div></div>
+        <div id="paneRight" class="split-pane pane-right"><div class="kinetic-word" id="wordRight">INE</div></div>
     </div>
 
-    <!-- نماذج الشراء (نفس الكود السابق) -->
-    <div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="closeModal()"><div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()"><div class="flex justify-between items-start mb-4"><h2 id="modalTitle" class="text-2xl font-bold"></h2><button onclick="closeModal()">✕</button></div><img id="modalImage" class="w-full h-64 object-cover rounded-xl mb-4"><p id="modalPrice" class="text-blue-600 font-bold text-xl mb-4"></p><div class="mb-4"><label class="block text-sm font-bold mb-2">📏 المقاس</label><div class="flex gap-2"><button onclick="selectSize(this,'S')" class="size-btn w-12 h-12 border-2 rounded-xl">S</button><button onclick="selectSize(this,'M')" class="size-btn w-12 h-12 border-2 rounded-xl">M</button><button onclick="selectSize(this,'L')" class="size-btn w-12 h-12 border-2 rounded-xl">L</button><button onclick="selectSize(this,'XL')" class="size-btn w-12 h-12 border-2 rounded-xl">XL</button></div></div><div class="mb-4"><label class="block text-sm font-bold mb-2">🎨 اللون</label><div class="flex gap-3"><button onclick="selectColor(this,'أبيض')" class="color-btn w-10 h-10 rounded-full border-2" style="background:white"></button><button onclick="selectColor(this,'أسود')" class="color-btn w-10 h-10 rounded-full border-2" style="background:black"></button><button onclick="selectColor(this,'رمادي')" class="color-btn w-10 h-10 rounded-full border-2" style="background:gray"></button></div></div><div class="mb-4"><label class="block text-sm font-bold mb-2">🔢 الكمية</label><div class="flex items-center gap-3"><button onclick="changeQty(-1)" class="w-10 h-10 border-2 rounded-xl">-</button><span id="qtyValue" class="text-xl font-bold w-12 text-center">1</span><button onclick="changeQty(1)" class="w-10 h-10 border-2 rounded-xl">+</button></div></div><button onclick="addToCart()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold">🛒 إضافة إلى السلة</button></div></div>
+    <!-- Return Home Trigger Icon -->
+    <div id="homeReturnBtn" class="home-return-trigger" onclick="handleNavigationToggle()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </div>
 
-    <div id="cartModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="closeCart()"><div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">🛍️ سلتي</h2><button onclick="closeCart()">✕</button></div><div id="cartItems" class="max-h-96 overflow-y-auto mb-4"></div><div class="border-t pt-4 mb-4"><div class="flex justify-between font-bold text-lg"><span>المجموع:</span><span id="cartTotal" class="text-blue-600">$0</span></div></div><button onclick="checkout()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-bold">💳 إتمام الشراء</button></div></div>
+    <div id="storefrontContent">
+        <!-- Navbar -->
+        <nav id="topNavbar" class="floating-nav">
+            <div class="flex items-center cursor-pointer" onclick="triggerPortalTransition('home')">
+                <img src="https://img.icons8.com/color/96/clothes.png" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white p-1">
+            </div>
+            <div class="brand-lockup-global text-xl md:text-2xl font-brand tracking-tighter uppercase text-center cursor-pointer" onclick="triggerPortalTransition('home')">
+                <span class="nav-title-text">AMINE</span><span class="font-ampersand text-blue-500 lowercase">&amp;</span><span class="nav-shirts-text lowercase font-brand">shirts</span>
+            </div>
+            
+            <!-- Dynamic Social Media Hub -->
+            <div class="hidden md:flex items-center gap-2" id="navSocialHub"></div>
 
-    <div id="checkoutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="closeCheckout()"><div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()"><h2 class="text-2xl font-bold mb-4">📝 معلومات الطلب</h2><input type="text" id="customerName" placeholder="الاسم الكامل" class="w-full p-3 border rounded-xl mb-3"><input type="text" id="customerAddress" placeholder="العنوان" class="w-full p-3 border rounded-xl mb-3"><input type="tel" id="customerPhone" placeholder="رقم الهاتف" class="w-full p-3 border rounded-xl mb-4"><button onclick="submitOrder()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold">✅ تأكيد الطلب</button></div></div>
+            <div class="flex items-center ml-2">
+                <button onclick="toggleCartModalView(true)" class="relative bg-gray-100 p-2.5 rounded-full hover:bg-blue-50 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-blue-500 text-white font-bold text-[10px] w-4 block h-4 rounded-full flex items-center justify-center opacity-0 scale-50 transition-all duration-300">0</span>
+                </button>
+            </div>
+        </nav>
+
+        <div id="dynamic-render-viewport">
+            <!-- Home View Context -->
+            <div id="home-view-context" class="w-full">
+                <section class="relative min-h-screen flex flex-col items-center justify-center pt-24 overflow-hidden">
+                    <div id="hero-bg-text" class="parallax-layer absolute inset-0 flex items-center justify-center opacity-5 select-none pointer-events-none">
+                        <h1 class="text-[25vw] font-brand leading-none">open</h1>
+                    </div>
+                    <div class="relative z-10 text-center px-4">
+                        <h1 class="text-7xl md:text-9xl font-brand mb-4 leading-tight text-black">
+                            NEW <span class="font-brand text-blue-500">DROP</span><br>
+                            <span class="bubble-font text-5xl md:text-7xl">AVAILABLE NOW</span>
+                        </h1>
+                        <p class="text-lg md:text-xl font-medium text-gray-500 mb-8 max-w-xl mx-auto">
+                            The intersection of streetwear and luxury. Exclusive limited releases available this season.
+                        </p>
+                    </div>
+                    <div id="hero-image-container" class="parallax-layer mt-4 relative w-full max-w-lg aspect-square flex items-center justify-center">
+                        <div class="absolute inset-0 bg-blue-400/10 rounded-full blur-3xl"></div>
+                        <img id="hero-image" src="https://img.icons8.com/plasticine/400/t-shirt.png" alt="Featured Shirt" class="relative z-20 w-80 h-80 object-contain">
+                    </div>
+                </section>
+            </div>
+
+            <!-- All Collection Context -->
+            <div id="all-collection-context" class="w-full" style="display: none;">
+                <section class="all-collection-matrix-hero">
+                    <div class="relative z-10 text-center px-6 max-w-4xl">
+                        <h1 class="brand-lockup-global text-6xl md:text-8xl font-brand leading-none tracking-tight mb-6 uppercase text-white">
+                            ALL <span class="font-shirts" style="color: #ffffff !important;">SHIRTS</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">COLLECTIONS</span>
+                        </h1>
+                        <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-medium">
+                            Welcome to the full catalog landscape. Filter across premium marks, custom cuts, and archival version dates engineered for high-performance visual aesthetics.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Marquee Ticker -->
+        <div class="marquee-container my-10">
+            <div id="brand-ticker" class="flex gap-10 text-4xl md:text-6xl font-brand uppercase italic items-center">
+                <span class="brand-lockup-global">AMINE<span class="font-ampersand text-blue-500 lowercase">&amp;</span><span class="lowercase font-brand">shirts</span></span>
+                <svg viewBox="0 0 24 24" class="w-12 h-12 fill-blue-500" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.2c-2.5 0-5.5.8-8.1 2.4-2.6 1.6-4.5 4.1-5.6 7.1-.1.3-.2.5-.2.8 0 .1 0 .2.1.2.1.1.2.1.3.1.2 0 .4-.1.7-.2 3.6-2.1 8.5-3 12.8-2.6.2 0 .4 0 .5-.2.1-.1.1-.3.1-.5 0-.7-.2-1.5-.6-2.2-.5-.7-1.1-1.3-1.8-1.7-.5-.3-1.1-.5-1.7-.5z"/></svg>
+                <span>LIMITED RUN</span><span class="text-blue-500">★</span>
+                <span>SUPREME QUALITY</span><span class="text-blue-500">★</span>
+            </div>
+        </div>
+
+        <!-- Shop Catalog Section -->
+        <section id="shop" class="max-w-7xl mx-auto px-6 py-10">
+            <div id="catalog-header-area" class="mb-16">
+                <h2 id="main-catalog-title" class="text-5xl md:text-7xl font-brand uppercase">New <span class="font-brand lowercase">shirts</span></h2>
+                <p id="collection-subtitle" class="text-gray-400 font-bold uppercase tracking-tighter mt-2">Fresh Arrivals Tier — Limited Quantities</p>
+            </div>
+
+            <!-- Products Grid Core -->
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"></div>
+        </section>
+
+        <!-- Footer Module -->
+        <footer id="mainFooter" class="footer-card">
+            <div class="max-w-2xl mx-auto flex flex-col items-center justify-center text-center">
+                <div class="brand-lockup-global text-4xl md:text-6xl font-brand mb-6 uppercase select-none tracking-tighter">
+                    <span class="footer-main-title">AMINE</span><span class="font-ampersand text-blue-500 lowercase">&amp;</span><span class="footer-shirts-text lowercase font-brand">shirts</span>
+                </div>
+                
+                <!-- Footer Social Media Links Hub -->
+                <div class="flex items-center gap-4 mb-6" id="footerSocialHub"></div>
+
+                <div class="mb-6">
+                    <a href="mailto:aminshirts@gmail.com" class="footer-support-link text-[14px] uppercase font-black tracking-[0.3em] hover:text-white text-gray-400">Support</a>
+                </div>
+                <p class="footer-copyright text-[11px] tracking-[0.5em] uppercase font-normal mt-2 text-gray-500">2026 AMINE&amp;SHIRTS. ALL RIGHTS RESERVED</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating Navigation & Filter Deck Area -->
+    <div id="liquidNavWrapper" class="liquid-nav-wrapper">
+        <div id="brandsDropdown" class="brands-dropdown"></div>
+
+        <div id="filterDeck" class="filter-deck-panel">
+            <div id="deckMainMenu" class="deck-main-menu">
+                <button onclick="switchDeckView('typeView')" class="deck-pill-btn">Type of shir<span class="text-blue-400">t</span></button>
+                <button onclick="switchDeckView('styleView')" class="deck-pill-btn">Style of shir<span class="text-blue-400">t</span></button>
+                <button onclick="switchDeckView('marksView')" class="deck-pill-btn">Marks</button>
+                <button onclick="switchDeckView('versionView')" class="deck-pill-btn">Version price</button>
+            </div>
+
+            <div id="typeView" class="deck-options-view">
+                <div class="view-header">
+                    <button onclick="backToMainMenu()" class="back-arrow-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                    <span class="view-title">Type Hierarchy</span>
+                </div>
+                <div id="typeViewOptionsList" class="options-list"></div>
+            </div>
+
+            <div id="styleView" class="deck-options-view">
+                <div class="view-header">
+                    <button onclick="backToMainMenu()" class="back-arrow-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                    <span class="view-title">Style Palette</span>
+                </div>
+                <div id="styleViewOptionsList" class="options-list"></div>
+            </div>
+
+            <div id="marksView" class="deck-options-view">
+                <div class="view-header">
+                    <button onclick="backToMainMenu()" class="back-arrow-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                    <span class="view-title">Global Marks</span>
+                </div>
+                <div id="marksViewOptionsList" class="options-list"></div>
+            </div>
+
+            <div id="versionView" class="deck-options-view">
+                <div class="view-header">
+                    <button onclick="backToMainMenu()" class="back-arrow-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                    <span class="view-title">Release Timeline</span>
+                </div>
+                <div id="versionViewOptionsList" class="options-list"></div>
+            </div>
+        </div>
+
+        <div class="liquid-container">
+            <div id="liquidMenu" class="liquid-menu-base">
+                <div id="menuTriggerIcon" class="trigger-icon-container">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                </div>
+                <div id="liquidActions" class="liquid-actions-layer">
+                    <button onclick="handleNavigationToggle()" id="allCollectionNavBtn" class="action-item">All Collection</button>
+                    <button onclick="toggleMarksView(event)" id="marksNavBtn" class="action-item flex items-center gap-1">
+                        Marks <svg id="dropdownArrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <button onclick="toggleFilterDeckView(event)" id="filterNavBtn" class="action-item">Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Get It / Cart) -->
+    <div id="orderBackdrop" class="order-modal-backdrop" onclick="closeModal()">
+        <div id="orderCard" class="order-card-container flex flex-col md:flex-row" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-black p-2 bg-gray-100 rounded-full hover:rotate-90 transition-transform z-10"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <div class="w-full md:w-[42%] bg-gray-50 flex items-center justify-center p-8 relative">
+                <div class="absolute inset-0 bg-blue-500/5 blur-xl"></div>
+                <img id="modalProductImg" src="" alt="Thumbnail" class="w-48 h-48 md:w-full md:h-auto object-contain relative z-10">
+            </div>
+            <div class="w-full md:w-[58%] p-6 md:p-8 flex flex-col justify-between text-black">
+                <div>
+                    <div class="mb-5"><span class="text-[10px] font-bold tracking-[0.2em] text-blue-500 uppercase block mb-1">Authentic Drop</span><h2 id="modalTitleText" class="text-3xl font-brand uppercase tracking-tight leading-none mb-2">PRODUCT TITLE</h2><span id="modalPriceText" class="text-sm font-bold text-gray-400">$00.00</span></div>
+                    <div class="mb-5"><span class="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase block mb-2">Select Size</span><div class="flex gap-2"><div onclick="selectSizeOption(this)" class="size-pill w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-700 bg-gray-50">S</div><div onclick="selectSizeOption(this)" class="size-pill w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-700 bg-gray-50 active">M</div><div onclick="selectSizeOption(this)" class="size-pill w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-700 bg-gray-50">L</div><div onclick="selectSizeOption(this)" class="size-pill w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center text-xs font-bold text-gray-700 bg-gray-50">XL</div></div></div>
+                    <div class="mb-5"><span class="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase block mb-2">Select Color Tone</span><div class="flex gap-2.5 items-center"><div onclick="selectColorOption(this)" class="color-pill w-6 h-6 rounded-full bg-white border-2 border-gray-300 active" style="background-color: #ffffff;" data-color="White"></div><div onclick="selectColorOption(this)" class="color-pill w-6 h-6 rounded-full bg-black border-2 border-transparent" style="background-color: #0d0d0d;" data-color="Black"></div><div onclick="selectColorOption(this)" class="color-pill w-6 h-6 rounded-full bg-blue-500 border-2 border-transparent" style="background-color: #00d2ff;" data-color="Blue"></div></div></div>
+                    <div class="mb-6"><span class="text-[11px] font-extrabold tracking-wider text-gray-400 uppercase block mb-2">Quantity</span><div class="flex items-center border border-gray-200 w-28 h-9 rounded-xl bg-gray-50 overflow-hidden"><button onclick="updateQty(-1)" class="w-9 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 font-bold">-</button><span id="qtyDisplay" class="flex-1 text-center text-xs font-bold text-gray-800 select-none">1</span><button onclick="updateQty(1)" class="w-9 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 font-bold">+</button></div></div>
+                </div>
+                <div><button id="confirmOrderBtn" onclick="confirmOrder()" class="purchase-btn-main w-full h-14 rounded-2xl text-md flex items-center justify-center uppercase shadow-sm">PURCHASE CONFIRMATION</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartModalBackdrop" class="cart-modal-backdrop" onclick="toggleCartModalView(false)">
+        <div id="cartModalCard" class="cart-card-container text-black" onclick="event.stopPropagation()">
+            <button onclick="toggleCartModalView(false)" class="absolute top-5 right-5 text-black p-2 bg-gray-100 rounded-full hover:rotate-90 transition-transform z-10"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <div id="cartBasketStep" class="p-6 md:p-8 flex flex-col h-full justify-between">
+                <div><div class="mb-6"><span class="text-[10px] font-bold tracking-[0.2em] text-blue-500 uppercase block mb-1">Your Selections</span><h2 class="text-4xl font-brand uppercase tracking-tight leading-none">YOUR CART</h2></div><div id="cartItemsModalWrapper" class="cart-items-scroll-deck max-h-[260px] pr-1 flex flex-col gap-4"></div></div>
+                <div class="pt-6 mt-6 border-t border-gray-100"><div class="flex justify-between items-center mb-5 px-1"><span class="text-xs font-extrabold uppercase tracking-widest text-gray-400">Total Sum</span><span id="cartTotalSumDisplay" class="text-3xl font-brand text-blue-500">$0.00</span></div><div class="flex flex-col sm:flex-row gap-3"><button onclick="toggleCartModalView(false)" class="w-full sm:w-[35%] h-14 border-2 border-black rounded-2xl text-sm font-brand uppercase hover:bg-gray-50 transition-colors">CLOSE</button><button onclick="navigateToLogisticsForm()" class="purchase-btn-main w-full sm:w-[65%] h-14 rounded-2xl text-md flex items-center justify-center uppercase shadow-sm">PROCEED TO CHECKOUT</button></div></div>
+            </div>
+            <div id="cartLogisticsStep" class="p-6 md:p-8 flex flex-col h-full justify-between" style="display: none;">
+                <div><div class="mb-4 flex items-center gap-3"><button onclick="backToBasketStep()" class="text-black p-1.5 bg-gray-100 rounded-full hover:bg-gray-200"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button><div><span class="text-[10px] font-bold tracking-[0.2em] text-blue-500 uppercase block">Secure Gateway</span><h2 class="text-3xl font-brand uppercase tracking-tight leading-none">SHIPPING DATA</h2></div></div><div class="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1"><div><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Phone Number *</label><input type="tel" id="shippingPhone" placeholder="E.g. +123456789" class="logistics-input"></div><div><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Exact Location / Address *</label><input type="text" id="shippingAddress" placeholder="Street name, building or house number" class="logistics-input"></div><div><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Neighborhood / District *</label><input type="text" id="shippingDistrict" placeholder="Neighborhood or district title" class="logistics-input"></div><div><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">In Case of No Answer *</label><input type="text" id="shippingFallback" placeholder="Leave with security, call backup number, etc." class="logistics-input"></div><div><label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Delivery Duration *</label><select id="shippingDuration" class="logistics-input logistics-select"><option value="Express (24-48 Hours)">Express Delivery (24-48 Hours)</option><option value="Standard (3-5 Days)">Standard Delivery (3-5 Days)</option></select></div><div class="flex items-start gap-2 mt-2"><input type="checkbox" id="shippingAgreement" class="w-4 h-4 mt-0.5 rounded border-gray-300 accent-black cursor-pointer"><label for="shippingAgreement" class="text-[11px] font-semibold text-gray-500 select-none cursor-pointer">I confirm that all shipping credentials provided are precise and I commit to delivery receiving protocols.</label></div></div></div><div class="pt-4 mt-4 border-t border-gray-100"><button id="finalSubmitServiceBtn" onclick="transmitToHtmlService()" class="purchase-btn-main w-full h-14 rounded-2xl text-md flex items-center justify-center uppercase shadow-sm">CONFIRM &amp; TRANSMIT TO SERVICE</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Dynamic Success Toast Notification Component -->
+    <div id="successToast" class="success-toast">✅ Order placed successfully!</div>
 
     <script>
-        let products = [], cart = [], selectedProduct = null, selectedSize = 'M', selectedColor = 'أبيض', qty = 1;
-        const API_URL = window.location.origin;  // يستخدم نفس رابط الموقع تلقائياً
+        gsap.registerPlugin(ScrollTrigger);
 
-        async function loadProducts() {
-            const response = await fetch(`${API_URL}/api/products`);
-            const data = await response.json();
-            products = data.products || [];
-            if (products.length === 0) { document.getElementById('emptyState').classList.remove('hidden'); document.getElementById('productsGrid').innerHTML = ''; }
-            else { document.getElementById('emptyState').classList.add('hidden'); renderProducts(); }
+        // ===================== SUPABASE CONFIG =====================
+        const SUPABASE_URL = 'https://dqoigxwasgdjdejuqire.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxb2lneHdhc2dkamRlanVxaXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNjc5NzksImV4cCI6MjA5NDg0Mzk3OX0.NqlDoMkbrgCAhmKzJaTdtfWz9lbkKiVhpNuJM0fvOVQ';
+
+        const API_CONFIG = {
+            BASE_URL: `${SUPABASE_URL}/rest/v1`,
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        };
+
+        // ===================== GLOBAL VARIABLES =====================
+        let portalActive = true;
+        let executingReveal = false;
+        let teaseInterval;
+        let isLiquidBarExpanded = false;
+        let lastScrollY = window.scrollY;
+        let currentScreenMode = "home"; 
+        let currentQty = 1;
+        let cartStateGlobalMemory = [];
+
+        let globalProductsData = []; 
+
+        // ===================== SOCIAL MEDIA CONFIG =====================
+        const ADMIN_CONFIG = {
+            instagram: "https://instagram.com/yourprofile",
+            tiktok: "https://tiktok.com/@yourprofile",
+            whatsapp: "https://wa.me/123456789"
+        };
+
+        function renderSocialMediaHubs() {
+            const navHub = document.getElementById('navSocialHub');
+            const footerHub = document.getElementById('footerSocialHub');
+            navHub.innerHTML = ""; footerHub.innerHTML = "";
+            const networks = [
+                { name: 'Instagram', url: ADMIN_CONFIG.instagram, icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>` },
+                { name: 'TikTok', url: ADMIN_CONFIG.tiktok, icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>` },
+                { name: 'WhatsApp', url: ADMIN_CONFIG.whatsapp, icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>` }
+            ];
+            networks.forEach(net => {
+                if(net.url && net.url !== "") {
+                    const navLink = document.createElement('a'); navLink.href = net.url; navLink.target = "_blank"; navLink.className = "social-link-icon text-black body.all-collection-mode:text-white"; navLink.innerHTML = net.icon; navHub.appendChild(navLink);
+                    const footerLink = document.createElement('a'); footerLink.href = net.url; footerLink.target = "_blank"; footerLink.className = "social-link-icon text-white"; footerLink.innerHTML = net.icon; footerHub.appendChild(footerLink);
+                }
+            });
         }
 
-        function renderProducts() {
-            document.getElementById('productsGrid').innerHTML = products.map(p => `<div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm"><img src="${p.imageUrl}" class="w-full h-64 object-cover" onclick="openModal(${p.id})"><div class="p-4"><div class="flex justify-between items-start mb-2"><h3 class="font-bold text-lg">${p.name}</h3><span class="text-blue-600 font-bold">$${p.price}</span></div><p class="text-sm text-gray-500 mb-3">${p.brand} · ${p.type} · ${p.style}</p><button onclick="openModal(${p.id})" class="w-full bg-gray-900 text-white py-2 rounded-xl font-bold hover:bg-blue-600">اشتري الآن</button></div></div>`).join('');
+        // ===================== FETCH PRODUCTS FROM SUPABASE =====================
+        async function fetchProductsFromSupabase() {
+            try {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/products?select=*`, { headers: API_CONFIG.headers });
+                if (!response.ok) throw new Error('Failed to fetch products');
+                const products = await response.json();
+                globalProductsData = products;
+                console.log("Products loaded:", products);
+                buildAdminCatalogGrid(); 
+                buildDynamicControlInterfaces(); 
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                globalProductsData = [];
+                buildAdminCatalogGrid();
+            }
         }
 
-        function openModal(id) { selectedProduct = products.find(p => p.id === id); document.getElementById('modalTitle').innerText = selectedProduct.name; document.getElementById('modalImage').src = selectedProduct.imageUrl; document.getElementById('modalPrice').innerHTML = `$${selectedProduct.price}`; qty = 1; document.getElementById('qtyValue').innerText = qty; document.getElementById('productModal').style.display = 'flex'; }
-        function selectSize(btn, size) { selectedSize = size; document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50')); btn.classList.add('border-blue-500', 'bg-blue-50'); }
-        function selectColor(btn, color) { selectedColor = color; document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-blue-500')); btn.classList.add('ring-2', 'ring-blue-500'); }
-        function changeQty(delta) { qty += delta; if (qty < 1) qty = 1; document.getElementById('qtyValue').innerText = qty; }
-        function closeModal() { document.getElementById('productModal').style.display = 'none'; }
-        function addToCart() { let existing = cart.find(i => i.id === selectedProduct.id && i.size === selectedSize && i.color === selectedColor); if (existing) existing.qty += qty; else cart.push({ ...selectedProduct, size: selectedSize, color: selectedColor, qty }); updateCartUI(); closeModal(); Swal.fire('تم الإضافة', '', 'success'); }
-        function updateCartUI() { let count = cart.reduce((s, i) => s + i.qty, 0); let badge = document.getElementById('cartCount'); if (count > 0) { badge.innerText = count; badge.classList.add('flex'); badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); } }
-        function openCart() { let container = document.getElementById('cartItems'); if (cart.length === 0) container.innerHTML = '<div class="text-center py-8 text-gray-500">سلتك فارغة</div>'; else { container.innerHTML = cart.map((i, idx) => `<div class="flex gap-3 mb-3 p-3 bg-gray-50 rounded-xl"><img src="${i.imageUrl}" class="w-16 h-16 object-cover rounded-lg"><div class="flex-1"><p class="font-bold">${i.name}</p><p class="text-sm text-gray-500">${i.size} / ${i.color}</p><div class="flex justify-between items-center mt-2"><div class="flex gap-2"><button onclick="changeCartQty(${idx}, -1)" class="w-7 h-7 border rounded-lg">-</button><span>${i.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-7 h-7 border rounded-lg">+</button></div><span class="font-bold text-blue-600">$${i.price * i.qty}</span></div></div><button onclick="removeFromCart(${idx})" class="text-red-500">🗑️</button></div>`).join(''); let total = cart.reduce((s, i) => s + (i.price * i.qty), 0); document.getElementById('cartTotal').innerText = `$${total}`; } document.getElementById('cartModal').style.display = 'flex'; }
-        function changeCartQty(idx, delta) { cart[idx].qty += delta; if (cart[idx].qty < 1) cart.splice(idx, 1); updateCartUI(); openCart(); }
-        function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); openCart(); }
-        function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
-        function checkout() { if (cart.length === 0) { Swal.fire('تنبيه', 'سلتك فارغة', 'warning'); return; } closeCart(); document.getElementById('checkoutModal').style.display = 'flex'; }
-        function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; }
-        async function submitOrder() { let name = document.getElementById('customerName').value, address = document.getElementById('customerAddress').value, phone = document.getElementById('customerPhone').value; if (!name || !address || !phone) { Swal.fire('تنبيه', 'الرجاء ملء جميع الحقول', 'warning'); return; } let total = cart.reduce((s, i) => s + (i.price * i.qty), 0); let items = cart.map(i => ({ name: i.name, size: i.size, color: i.color, qty: i.qty, price: i.price })); let response = await fetch(`${API_URL}/api/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customerName: name, customerAddress: address, customerPhone: phone, items, total }) }); let data = await response.json(); if (data.success) { Swal.fire('تم الطلب', 'تم استلام طلبك بنجاح!', 'success'); cart = []; updateCartUI(); closeCheckout(); } else { Swal.fire('خطأ', data.message, 'error'); } }
-        loadProducts();
+        // ===================== RENDER GRID FROM GLOBAL DATA =====================
+        function buildAdminCatalogGrid() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = "";
+            
+            if(globalProductsData.length === 0) {
+                grid.className = "grid grid-cols-1 w-full text-center py-20";
+                grid.innerHTML = `<div class="max-w-md mx-auto px-4"><p class="text-xs font-black uppercase tracking-[0.2em] text-gray-400">STATUS: CATALOG EMPTY</p><h3 class="text-2xl font-brand uppercase mt-2 text-gray-300">Awaiting management inventory drop update...</h3></div>`;
+                return;
+            }
+
+            grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12";
+
+            globalProductsData.forEach(product => {
+                const card = document.createElement('div');
+                card.className = "product-card group";
+                card.setAttribute('data-type', product.type);
+                card.setAttribute('data-style', product.style);
+                card.setAttribute('data-brand', product.brand || "Premium");
+                card.setAttribute('data-version', product.version || "2026");
+                card.setAttribute('data-drop', product.drop || "new");
+
+                const imgUrl = product.image_url || "https://img.icons8.com/plasticine/400/t-shirt.png";
+                const filterStyle = product.filter_style || "none";
+
+                card.innerHTML = `
+                    <div class="bg-gray-50 rounded-[3rem] p-10 mb-6 overflow-hidden relative aspect-[4/5] flex items-center justify-center transition-all duration-300">
+                        <div class="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors duration-300"></div>
+                        <img src="${imgUrl}" style="filter: ${filterStyle}" class="product-img w-full transform group-hover:scale-105 transition-transform duration-500 object-contain" alt="Shirt">
+                    </div>
+                    <div class="px-2">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="text-xl font-bold uppercase tracking-tight truncate mr-2">${product.name}</h3>
+                            <span class="text-xl font-brand text-blue-500">$${parseFloat(product.price).toFixed(2)}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm font-medium mb-4">${product.type} · ${product.style} · ${product.segment}</p>
+                        <button onclick='openModal("${product.name.replace(/'/g, "\\'")}", ${product.price}, "${imgUrl}", "${filterStyle}")' class="get-it-btn">GET I<span class="text-blue-400">T</span></button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ===================== BUILD FILTERS FROM ACTUAL DATA =====================
+        function buildDynamicControlInterfaces() {
+            const dropdown = document.getElementById('brandsDropdown');
+            const marksViewList = document.getElementById('marksViewOptionsList');
+            const typeViewList = document.getElementById('typeViewOptionsList');
+            const styleViewList = document.getElementById('styleViewOptionsList');
+            const versionViewList = document.getElementById('versionViewOptionsList');
+            
+            dropdown.innerHTML = ""; marksViewList.innerHTML = ""; typeViewList.innerHTML = ""; styleViewList.innerHTML = ""; versionViewList.innerHTML = "";
+
+            if(globalProductsData.length === 0) {
+                typeViewList.innerHTML = `<div class="text-[11px] text-gray-400 p-2">Empty — Waiting For Admin Drop</div>`;
+                styleViewList.innerHTML = `<div class="text-[11px] text-gray-400 p-2">Empty — Waiting For Admin Drop</div>`;
+                versionViewList.innerHTML = `<div class="text-[11px] text-gray-400 p-2">Empty — Waiting For Admin Drop</div>`;
+                marksViewList.innerHTML = `<div class="text-[11px] text-gray-400 p-2">No Brands Available</div>`;
+                dropdown.innerHTML = `<div class="text-[10px] text-gray-400 p-2 text-center">No Brands Available</div>`;
+                return;
+            }
+
+            const uniqueTypes = [...new Set(globalProductsData.map(p => p.type).filter(Boolean))];
+            const uniqueStyles = [...new Set(globalProductsData.map(p => p.style).filter(Boolean))];
+            const uniqueBrands = [...new Set(globalProductsData.map(p => p.brand).filter(Boolean))];
+            if(uniqueBrands.length === 0) uniqueBrands.push("Premium");
+
+            uniqueBrands.forEach(brand => {
+                const dropBtn = document.createElement('button'); dropBtn.className = "dropdown-item"; dropBtn.innerText = brand; dropBtn.onclick = () => executeFilter('brand', brand); dropdown.appendChild(dropBtn);
+                const filterItem = document.createElement('div'); filterItem.className = "clean-option-item"; filterItem.innerText = brand + " Drop Tier"; filterItem.onclick = function() { executeFilter('brand', brand, this); }; marksViewList.appendChild(filterItem);
+            });
+
+            uniqueTypes.forEach(t => {
+                const item = document.createElement('div'); item.className = "clean-option-item"; item.innerText = t;
+                item.onclick = function() { executeFilter('type', t, this); }; typeViewList.appendChild(item);
+            });
+            uniqueStyles.forEach(s => {
+                const item = document.createElement('div'); item.className = "clean-option-item"; item.innerText = s;
+                item.onclick = function() { executeFilter('style', s, this); }; styleViewList.appendChild(item);
+            });
+        }
+
+        // ===================== SPLASH SCREEN ANIMATIONS =====================
+        function startTeasingAnimation() {
+            if (!portalActive || executingReveal) return;
+            teaseInterval = setInterval(() => {
+                if (!portalActive || executingReveal) return;
+                gsap.timeline().to("#paneLeft", { x: "-5%", duration: 0.2, ease: "power1.out" }).to("#paneRight", { x: "5%", duration: 0.2, ease: "power1.out" }, 0).to("#paneLeft", { x: "0%", duration: 0.4, ease: "power1.inOut" }, "+=0.02").to("#paneRight", { x: "0%", duration: 0.4, ease: "power1.inOut" }, "<");
+            }, 4500); 
+        }
+
+        function executeCinematicReveal() {
+            if (executingReveal) return;
+            executingReveal = true;
+            clearInterval(teaseInterval);
+            gsap.timeline({ onComplete: () => { document.getElementById('kineticPortal').style.display = 'none'; portalActive = false; executingReveal = false; } })
+            .to("#paneLeft", { x: "-105%", duration: 0.5, ease: "power2.out" }, 0)
+            .to("#paneRight", { x: "105%", duration: 0.5, ease: "power2.out" }, 0)
+            .to("#wordLeft", { opacity: 0, duration: 0.3 }, 0)
+            .to("#wordRight", { opacity: 0, duration: 0.3 }, 0);
+        }
+
+        function handleNavigationToggle() { triggerPortalTransition(currentScreenMode === "home" ? 'all' : 'home'); }
+
+        function triggerPortalTransition(targetMode) {
+            if (executingReveal) return;
+            executingReveal = true;
+            document.getElementById('topNavbar').classList.add('nav-hidden');
+            document.getElementById('homeReturnBtn').classList.remove('visible');
+            const portal = document.getElementById('kineticPortal');
+            portal.style.display = 'flex';
+            gsap.timeline({ onComplete: () => { applyViewChanges(targetMode); gsap.timeline({ onComplete: () => { portal.style.display = 'none'; portalActive = false; executingReveal = false; } }).to("#paneLeft", { x: "-105%", duration: 0.5, ease: "power2.out" }, 0).to("#paneRight", { x: "105%", duration: 0.5, ease: "power2.out" }, 0); } }).to("#paneLeft", { x: "0%", duration: 0.4, ease: "power2.out" }, 0).to("#paneRight", { x: "0%", duration: 0.4, ease: "power2.out" }, 0);
+        }
+
+        function applyViewChanges(targetMode) {
+            collapseLiquidSplit();
+            window.scrollTo({ top: 0 });
+            const allCollectionContainer = document.getElementById('all-collection-context');
+            const navBtn = document.getElementById('allCollectionNavBtn');
+            if (targetMode === 'all') {
+                currentScreenMode = "all";
+                document.body.classList.add('all-collection-mode');
+                document.getElementById('homeReturnBtn').classList.add('visible');
+                document.getElementById('home-view-context').style.display = 'none';
+                navBtn.innerHTML = "Home";
+                allCollectionContainer.style.display = 'block';
+                gsap.fromTo(allCollectionContainer, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+                document.getElementById('main-catalog-title').innerHTML = 'All <span class="font-brand lowercase">shirts</span>';
+                document.querySelectorAll('.product-card').forEach(card => card.style.display = 'block');
+            } else {
+                currentScreenMode = "home";
+                document.body.classList.remove('all-collection-mode');
+                document.getElementById('topNavbar').classList.remove('nav-hidden');
+                document.getElementById('home-view-context').style.display = 'block';
+                allCollectionContainer.style.display = 'none';
+                navBtn.innerHTML = "All Collection";
+                document.getElementById('main-catalog-title').innerHTML = 'New <span class="font-brand lowercase">shirts</span>';
+                document.querySelectorAll('.product-card').forEach(card => { card.style.display = card.getAttribute('data-drop') === 'new' ? 'block' : 'none'; });
+            }
+            ScrollTrigger.refresh();
+        }
+
+        // ===================== LIQUID MENU FUNCTIONS =====================
+        function triggerLiquidSplit() {
+            if (isLiquidBarExpanded) return;
+            isLiquidBarExpanded = true;
+            const menu = document.getElementById('liquidMenu');
+            gsap.to(document.getElementById('menuTriggerIcon'), { opacity: 0, duration: 0.1 });
+            gsap.timeline().to(menu, { width: window.innerWidth > 768 ? 460 : 350, height: 56, backgroundColor: currentScreenMode === 'all' ? "rgba(255,255,255,0.95)" : "rgba(3, 7, 18, 0.92)", duration: 0.4, ease: "elastic.out(1, 0.75)" }).to(document.getElementById('liquidActions'), { opacity: 1, duration: 0.15, onComplete: () => document.getElementById('liquidActions').style.pointerEvents = "auto" }, "-=0.25");
+        }
+
+        function collapseLiquidSplit() {
+            if (!isLiquidBarExpanded) return;
+            isLiquidBarExpanded = false;
+            hidePanels();
+            document.getElementById('liquidActions').style.pointerEvents = "none";
+            gsap.to(document.getElementById('liquidActions'), { opacity: 0, duration: 0.1 });
+            gsap.timeline().to(document.getElementById('liquidMenu'), { width: 64, height: 64, backgroundColor: currentScreenMode === 'all' ? "rgba(255,255,255,0.85)" : "rgba(0, 0, 0, 0.85)", duration: 0.35, ease: "elastic.out(1, 0.8)" }).to(document.getElementById('menuTriggerIcon'), { opacity: 1, duration: 0.15 }, "-=0.2");
+        }
+
+        function toggleMarksView(e) { e.stopPropagation(); const dropdown = document.getElementById('brandsDropdown'); document.getElementById('filterDeck').classList.remove('open'); document.getElementById('filterNavBtn').classList.remove('active'); dropdown.classList.toggle('open'); document.getElementById('marksNavBtn').classList.toggle('active', dropdown.classList.contains('open')); document.getElementById('dropdownArrow').style.transform = dropdown.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)'; }
+        function toggleFilterDeckView(e) { e.stopPropagation(); const deck = document.getElementById('filterDeck'); document.getElementById('brandsDropdown').classList.remove('open'); document.getElementById('dropdownArrow').style.transform = 'rotate(0deg)'; document.getElementById('marksNavBtn').classList.remove('active'); deck.classList.toggle('open'); document.getElementById('filterNavBtn').classList.toggle('active', deck.classList.contains('open')); if (deck.classList.contains('open')) resetAllDeckViews(); }
+        function hidePanels() { document.getElementById('brandsDropdown').classList.remove('open'); document.getElementById('filterDeck').classList.remove('open'); document.getElementById('dropdownArrow').style.transform = 'rotate(0deg)'; document.getElementById('marksNavBtn').classList.remove('active'); document.getElementById('filterNavBtn').classList.remove('active'); setTimeout(resetAllDeckViews, 300); }
+        function resetAllDeckViews() { const mainMenu = document.getElementById('deckMainMenu'); mainMenu.style.display = 'flex'; gsap.set(mainMenu.querySelectorAll('.deck-pill-btn'), { x: 0, opacity: 1 }); document.querySelectorAll('.deck-options-view').forEach(view => { view.style.display = 'none'; gsap.set(view.querySelectorAll('.clean-option-item, .view-header'), { x: 0, opacity: 0 }); }); }
+        function switchDeckView(targetViewId) { const mainMenu = document.getElementById('deckMainMenu'); const targetView = document.getElementById(targetViewId); const mainItems = mainMenu.querySelectorAll('.deck-pill-btn'); gsap.killTweensOf(mainItems); gsap.to(mainItems, { x: -10, opacity: 0, stagger: 0.03, duration: 0.2, ease: "power2.in", onComplete: () => { mainMenu.style.display = 'none'; targetView.style.display = 'flex'; const subItems = targetView.querySelectorAll('.clean-option-item, .view-header'); gsap.fromTo(subItems, { x: 15, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.04, duration: 0.35, ease: "power3.out" }); } }); }
+        function backToMainMenu() { const mainMenu = document.getElementById('deckMainMenu'); const activeView = document.querySelector('.deck-options-view[style*="display: flex"]'); if (activeView) { const subItems = activeView.querySelectorAll('.clean-option-item, .view-header'); gsap.to(subItems, { x: 15, opacity: 0, stagger: 0.03, duration: 0.2, ease: "power2.in", onComplete: () => { activeView.style.display = 'none'; mainMenu.style.display = 'flex'; const mainItems = mainMenu.querySelectorAll('.deck-pill-btn'); gsap.fromTo(mainItems, { x: -10, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.04, duration: 0.35, ease: "power3.out" }); } }); } }
+        function executeFilter(category, query, element) { if (element) { element.parentNode.querySelectorAll('.clean-option-item').forEach(el => el.classList.remove('active')); element.classList.add('active'); } setTimeout(() => { hidePanels(); collapseLiquidSplit(); }, 200); document.querySelectorAll('.product-card').forEach(product => { let matchValue = product.getAttribute(`data-${category}`); if (matchValue && matchValue.toLowerCase() === query.toLowerCase()) { product.style.display = 'block'; gsap.to(product, { opacity: 1, duration: 0.3 }); } else product.style.display = 'none'; }); document.getElementById('catalog-header-area').scrollIntoView({ behavior: 'smooth' }); }
+
+        // ===================== CART & MODAL FUNCTIONS =====================
+        function openModal(name, price, imgSrc, filterStyle) {
+            currentQty = 1; document.getElementById('qtyDisplay').innerText = currentQty;
+            const card = document.getElementById('orderCard');
+            document.getElementById('modalTitleText').innerText = name.toUpperCase();
+            document.getElementById('modalPriceText').innerText = "$" + price.toFixed(2) + " · Limited Drop Stock";
+            document.getElementById('modalProductImg').src = imgSrc;
+            document.getElementById('modalProductImg').style.filter = filterStyle;
+            document.getElementById('confirmOrderBtn').innerText = 'PURCHASE CONFIRMATION';
+            document.getElementById('confirmOrderBtn').style.backgroundColor = '#000000';
+            document.getElementById('orderBackdrop').classList.add('active');
+            gsap.fromTo(card, { scale: 0.9, y: 30, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.2)" });
+        }
+        function closeModal() { gsap.to(document.getElementById('orderCard'), { scale: 0.92, y: 15, opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => document.getElementById('orderBackdrop').classList.remove('active') }); }
+        function selectSizeOption(el) { el.parentNode.querySelectorAll('.size-pill').forEach(pill => pill.classList.remove('active')); el.classList.add('active'); }
+        function selectColorOption(el) { el.parentNode.querySelectorAll('.color-pill').forEach(pill => pill.classList.remove('active')); el.classList.add('active'); }
+        function updateQty(val) { currentQty += val; if (currentQty < 1) currentQty = 1; document.getElementById('qtyDisplay').innerText = currentQty; }
+        
+        function confirmOrder() {
+            const btn = document.getElementById('confirmOrderBtn');
+            btn.innerText = "PROCESSING LOGISTICS...";
+            
+            setTimeout(() => {
+                const productName = document.getElementById('modalTitleText').innerText;
+                const rawPrice = document.getElementById('modalPriceText').innerText.split(' ')[0].replace('$', '');
+                const productImg = document.getElementById('modalProductImg').src;
+                const productFilter = document.getElementById('modalProductImg').style.filter;
+                const productSize = document.querySelector('.size-pill.active')?.innerText || 'M';
+                const productColor = document.querySelector('.color-pill.active')?.getAttribute('data-color') || 'White';
+                
+                console.log("🛒 Adding to cart:", productName, rawPrice, productSize, productColor, currentQty);
+                
+                pushItemToCartMemory(productName, parseFloat(rawPrice), productImg, productFilter, productSize, productColor, currentQty);
+                
+                btn.innerText = "SUCCESSFULLY SECURED! 🚀";
+                btn.style.backgroundColor = "#10b981";
+                
+                setTimeout(() => {
+                    closeModal();
+                    toggleCartModalView(true);
+                    btn.innerText = "PURCHASE CONFIRMATION";
+                    btn.style.backgroundColor = "#000000";
+                }, 1200);
+            }, 1200);
+        }
+
+        function toggleCartModalView(isOpen) { const backdrop = document.getElementById('cartModalBackdrop'); const card = document.getElementById('cartModalCard'); if (isOpen) { backToBasketStep(); backdrop.classList.add('active'); gsap.fromTo(card, { scale: 0.9, y: 30, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.2)" }); } else { gsap.to(card, { scale: 0.92, y: 15, opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => backdrop.classList.remove('active') }); } }
+        
+        function pushItemToCartMemory(name, price, img, filter, size, color, qty) { 
+            console.log("📦 pushItemToCartMemory called:", name, price, size, color, qty);
+            const matchIndex = cartStateGlobalMemory.findIndex(item => item.name === name && item.size === size && item.color === color); 
+            if (matchIndex > -1) cartStateGlobalMemory[matchIndex].qty += qty; 
+            else { 
+                cartStateGlobalMemory.push({ id: Date.now() + Math.random().toString(36).substr(2, 3), name, price, img, filter, size, color, qty }); 
+            } 
+            renderCartInterfaceView(); 
+        }
+        
+        function changeCartQty(id, alteration) { const idx = cartStateGlobalMemory.findIndex(item => item.id === id); if (idx > -1) { cartStateGlobalMemory[idx].qty += alteration; if (cartStateGlobalMemory[idx].qty < 1) cartStateGlobalMemory.splice(idx, 1); renderCartInterfaceView(); } }
+        function removeCartItemCompletely(id) { cartStateGlobalMemory = cartStateGlobalMemory.filter(item => item.id !== id); renderCartInterfaceView(); }
+        
+        function renderCartInterfaceView() { 
+            const container = document.getElementById('cartItemsModalWrapper'); 
+            const totalDisplay = document.getElementById('cartTotalSumDisplay'); 
+            const badge = document.getElementById('cartCountBadge'); 
+            if (cartStateGlobalMemory.length === 0) { 
+                container.innerHTML = `<div class="text-center py-12 text-gray-400 font-medium text-xs uppercase tracking-wider">Your cart is completely empty</div>`; 
+                totalDisplay.innerText = "$0.00"; 
+                badge.style.opacity = "0"; 
+                badge.style.transform = "scale(0.5)"; 
+                return; 
+            } 
+            let compoundSum = 0; 
+            let totalUnits = 0; 
+            let builtHtmlOutput = ""; 
+            cartStateGlobalMemory.forEach(item => { 
+                compoundSum += (item.price * item.qty); 
+                totalUnits += item.qty; 
+                builtHtmlOutput += `<div class="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl relative border border-black/5"><div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center p-1 flex-shrink-0"><img src="${item.img}" style="filter: ${item.filter}" class="w-full h-full object-contain"></div><div class="flex-1 min-w-0"><h4 class="text-xs font-black uppercase tracking-tight truncate">${item.name}</h4><p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight mt-0.5">SZ: ${item.size} · CLR: ${item.color}</p><div class="flex items-center justify-between mt-1"><div class="flex items-center border border-gray-200 rounded-lg bg-white overflow-hidden h-6 w-20"><button onclick="changeCartQty('${item.id}', -1)" class="w-6 h-full text-xs text-gray-400 hover:bg-gray-100">-</button><span class="flex-1 text-center text-[11px] font-bold">${item.qty}</span><button onclick="changeCartQty('${item.id}', 1)" class="w-6 h-full text-xs text-gray-400 hover:bg-gray-100">+</button></div><span class="text-xs font-black text-blue-500">$${(item.price * item.qty).toFixed(2)}</span></div></div><button onclick="removeCartItemCompletely('${item.id}')" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`; 
+            }); 
+            container.innerHTML = builtHtmlOutput; 
+            totalDisplay.innerText = `$${compoundSum.toFixed(2)}`; 
+            badge.innerText = totalUnits; 
+            badge.style.opacity = "1"; 
+            badge.style.transform = "scale(1)"; 
+        }
+
+        function navigateToLogisticsForm() { if (cartStateGlobalMemory.length === 0) { alert("Cart is empty. Please select an item first."); return; } document.getElementById('cartBasketStep').style.display = 'none'; const targetStep = document.getElementById('cartLogisticsStep'); targetStep.style.display = 'flex'; gsap.fromTo(targetStep, { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.3 }); }
+        function backToBasketStep() { document.getElementById('cartLogisticsStep').style.display = 'none'; const basketStep = document.getElementById('cartBasketStep'); basketStep.style.display = 'flex'; gsap.fromTo(basketStep, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.3 }); }
+
+        // ===================== TRANSMIT TO SUPABASE & CHECKOUT (UPDATED) =====================
+        async function transmitToHtmlService() {
+            console.log("🛒 Cart items processing initialized:", cartStateGlobalMemory);
+            if (cartStateGlobalMemory.length === 0) {
+                alert("Cart is empty! Please add items to cart first.");
+                return;
+            }
+
+            const phone = document.getElementById('shippingPhone').value.trim();
+            const address = document.getElementById('shippingAddress').value.trim();
+            const district = document.getElementById('shippingDistrict').value.trim();
+            const fallback = document.getElementById('shippingFallback').value.trim();
+            const duration = document.getElementById('shippingDuration').value;
+            const agreed = document.getElementById('shippingAgreement').checked;
+
+            if (!phone || !address || !district || !fallback) {
+                alert("Please fill in all necessary shipping parameters.");
+                return;
+            }
+            if (!agreed) {
+                alert("You must agree to the delivery receiving protocols.");
+                return;
+            }
+
+            const btn = document.getElementById('finalSubmitServiceBtn');
+            btn.innerText = "SAVING ORDER...";
+            btn.disabled = true;
+
+            let finalErrorOccurred = false;
+
+            // تحديث الهيدرز لـ Supabase لتفادي رفض الطلبات الصامتة وتحسين الكفاءة
+            const requestHeaders = {
+                ...API_CONFIG.headers,
+                'Prefer': 'return=minimal'
+            };
+
+            for (const item of cartStateGlobalMemory) {
+                // تجميع حقول العنوان المتنوعة في نص واحد لضمان مطابقتها لأي عمود نصي في قاعدة البيانات
+                const fullLocationText = `District: ${district}, Address: ${address}, Backup Plan: ${fallback}`;
+
+                const orderData = {
+                    invoice_id: `INV-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+                    customer_name: "Premium Customer",
+                    location: fullLocationText,
+                    size: item.size,
+                    quantity: parseInt(item.qty) || 1,
+                    is_shipping_free: duration.includes('Express') ? false : true,
+                    price: parseFloat(item.price),
+                    product_type: item.name || "Premium Shirt",
+                    product_style: item.color || "Standard",
+                    segment: "Mix",
+                    status: 'pending',
+                    phone: phone
+                };
+
+                console.log("📦 Target Stream Package Payload:", orderData);
+
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/orders`, {
+                        method: 'POST',
+                        headers: requestHeaders,
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorDetails = await response.text();
+                        console.error('Supabase Error Pipeline Details:', errorDetails);
+                        finalErrorOccurred = true;
+                    }
+                } catch (error) {
+                    console.error('Network Transaction Pipeline Error:', error);
+                    finalErrorOccurred = true;
+                }
+            }
+
+            if (!finalErrorOccurred) {
+                executeSuccessState(btn);
+            } else {
+                alert("There was an issue processing one or more orders. Please check the developer console for details.");
+                btn.innerText = "CONFIRM & TRANSMIT TO SERVICE";
+                btn.disabled = false;
+            }
+        }
+
+        function showSuccessToast() {
+            const toast = document.getElementById('successToast');
+            if(toast) {
+                toast.style.transform = 'translateX(-50%) scale(1)';
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(-50%) scale(0)';
+                }, 3000);
+            }
+        }
+
+        function executeSuccessState(btnElement) {
+            btnElement.innerText = "ORDER SAVED! ✅";
+            btnElement.style.backgroundColor = "#10b981";
+            showSuccessToast();
+            setTimeout(() => {
+                cartStateGlobalMemory = [];
+                renderCartInterfaceView();
+                toggleCartModalView(false);
+                btnElement.disabled = false;
+                document.getElementById('shippingPhone').value = "";
+                document.getElementById('shippingAddress').value = "";
+                document.getElementById('shippingDistrict').value = "";
+                document.getElementById('shippingFallback').value = "";
+                document.getElementById('shippingAgreement').checked = false;
+            }, 1500);
+        }
+
+        // ===================== SCROLL LISTENER =====================
+        window.addEventListener('scroll', () => {
+            if (executingReveal) return;
+            let currentScroll = window.scrollY;
+            let maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const navWrapper = document.getElementById('liquidNavWrapper');
+            if (currentScreenMode === "home") { if (currentScroll > 150) document.getElementById('topNavbar').classList.add('nav-hidden'); else document.getElementById('topNavbar').classList.remove('nav-hidden'); }
+            if (currentScroll >= (maxScroll - 80)) { collapseLiquidSplit(); navWrapper.classList.add('match-footer'); gsap.set(navWrapper, { y: 200, opacity: 0, display: 'none' }); } else { navWrapper.style.display = 'flex'; navWrapper.classList.remove('match-footer'); gsap.set(navWrapper, { y: 0, opacity: 1 }); if (currentScroll > lastScrollY && currentScroll > 60) triggerLiquidSplit(); else if (currentScroll < lastScrollY && currentScroll > 60) collapseLiquidSplit(); }
+            lastScrollY = currentScroll;
+        });
+
+        // ===================== INIT RUNS =====================
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSocialMediaHubs();
+            fetchProductsFromSupabase();
+            startTeasingAnimation();
+            
+            document.getElementById('kineticPortal').addEventListener('click', executeCinematicReveal);
+            document.getElementById('liquidMenu').addEventListener('click', (e) => { e.stopPropagation(); triggerLiquidSplit(); });
+            document.addEventListener('click', () => { if (isLiquidBarExpanded) collapseLiquidSplit(); });
+        });
     </script>
 </body>
 </html>
