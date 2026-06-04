@@ -1,5 +1,5 @@
 {
-  "name": "maplemail-whatsapp",
+  "name": "maplemail-bot",
   "version": "1.0.0",
   "scripts": {
     "start": "node bot.js",
