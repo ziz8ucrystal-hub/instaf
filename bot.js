@@ -8,12 +8,15 @@ app.use(express.json());
 let botReady = false;
 let qrImage = '';
 
+// ============ Chrome Path لـ Render ============
+const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+                   '/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome';
+
 const client = new Client({
-    authStrategy: new LocalAuth({
-        dataPath: './session'
-    }),
+    authStrategy: new LocalAuth({ dataPath: './session' }),
     puppeteer: {
         headless: true,
+        executablePath: chromePath,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -21,88 +24,60 @@ const client = new Client({
             '--disable-gpu',
             '--single-process',
             '--disable-accelerated-2d-canvas',
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process',
-            '--disable-site-isolation-trials'
-        ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+            '--disable-web-security'
+        ]
     }
 });
 
-// ============ واتساب أحداث ============
 client.on('qr', async (qr) => {
     qrImage = await QRCode.toDataURL(qr);
-    console.log('📱 QR Code ready! Open /qr');
+    console.log('📱 Scan QR at /qr');
 });
 
 client.on('ready', () => {
     botReady = true;
-    console.log('✅ MapleMail WhatsApp Bot Online!');
+    console.log('✅ MapleMail Online!');
 });
 
-client.on('disconnected', (reason) => {
+client.on('disconnected', () => {
     botReady = false;
-    console.log('❌ Disconnected:', reason);
-    setTimeout(() => client.initialize(), 5000);
+    client.initialize();
 });
 
-// ============ API ============
+// ============ Routes ============
 app.get('/', (req, res) => {
-    res.json({
-        name: 'MapleMail WhatsApp Bot',
-        status: botReady ? 'online' : 'offline',
-        endpoints: {
-            qr: '/qr',
-            send: 'POST /send',
-            status: '/status'
-        }
-    });
+    res.json({ status: botReady ? 'online' : 'offline' });
 });
 
 app.get('/qr', (req, res) => {
-    if (botReady) {
-        return res.send('<h1 style="color:green">✅ Online</h1>');
-    }
-    if (!qrImage) {
-        return res.send('<h1>⏳ Loading... <meta http-equiv="refresh" content="3"></h1>');
-    }
-    res.send(`
-        <html><body style="background:#121214;color:white;text-align:center;padding:20px">
-        <h1 style="color:#d4f93a">🍁 MapleMail</h1>
-        <p>امسح QR Code من واتساب</p>
-        <img src="${qrImage}" width="300" style="border:3px solid #d4f93a;border-radius:20px;padding:10px;background:white">
-        <p style="color:#888">تحديث تلقائي كل 30 ثانية</p>
-        <script>setTimeout(()=>location.reload(),30000)</script>
-        </body></html>
-    `);
+    if (botReady) return res.send('✅ Online');
+    if (!qrImage) return res.send('⏳ Loading...<meta http-equiv="refresh" content="3">');
+    res.send(`<html><body style="background:#121214;text-align:center;padding:20px"><h1 style="color:#d4f93a">🍁 MapleMail</h1><p style="color:white">امسح QR من واتساب</p><img src="${qrImage}" width="300" style="background:white;padding:15px;border-radius:20px;border:3px solid #d4f93a"><script>setTimeout(()=>location.reload(),30000)</script></body></html>`);
 });
 
-app.get('/status', (req, res) => {
-    res.json({ online: botReady });
-});
+app.get('/status', (req, res) => res.json({ online: botReady }));
 
 app.post('/send', async (req, res) => {
     const { phone, code } = req.body;
-    
-    if (!botReady) {
-        return res.json({ success: false, error: 'Bot offline' });
-    }
+    if (!botReady) return res.json({ success: false, error: 'Bot offline' });
     
     try {
         const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
         await client.sendMessage(
             `${cleaned}@c.us`,
-            `🍁 *MapleMail*\n\n🔐 رمز التحقق: *${code}*\n⏰ صالح لمدة 10 دقائق`
+            `🍁 *MapleMail*\n\n🔐 *رمز التحقق:* \`${code}\`\n⏰ صالح لمدة 10 دقائق\n🔒 لا تشارك هذا الرمز`
         );
         res.json({ success: true });
-    } catch (error) {
-        res.json({ success: false, error: error.message });
+    } catch (e) {
+        res.json({ success: false, error: e.message });
     }
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server on port ${PORT}`);
-});
-
+app.listen(PORT, () => console.log(`🚀 Port: ${PORT}`));
 client.initialize();
+
+// Keep alive
+setInterval(() => {
+    console.log('💚 Alive:', new Date().toISOString());
+}, 300000);
