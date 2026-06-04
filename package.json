@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node bot.js",
-    "postinstall": "npx puppeteer browsers install chrome"
+    "postinstall": "node install-chrome.js"
   },
   "dependencies": {
     "express": "^4.18.2",
