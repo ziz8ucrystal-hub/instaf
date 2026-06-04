@@ -2,7 +2,6 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const QRCode = require('qrcode');
 const fs = require('fs');
-const path = require('path');
 const app = express();
 
 app.use(express.json());
@@ -10,25 +9,17 @@ app.use(express.json());
 let botReady = false;
 let qrImage = '';
 
-// ============ البحث عن Chrome الصحيح ============
+// البحث عن Chrome
 function findChrome() {
-    // المسار الدقيق من اللوق: chrome@127.0.6533.88
-    const exactPath = '/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome';
-    if (fs.existsSync(exactPath)) {
-        console.log('✅ Found:', exactPath);
-        return exactPath;
-    }
+    const paths = [
+        '/opt/render/project/src/node_modules/whatsapp-web.js/node_modules/puppeteer-core/.local-chromium/linux-146.0.7680.31/chrome-linux64/chrome',
+        '/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome'
+    ];
     
-    // البحث في كل المجلدات
-    const baseDir = '/opt/render/.cache/puppeteer/chrome';
-    if (fs.existsSync(baseDir)) {
-        const dirs = fs.readdirSync(baseDir);
-        for (const dir of dirs) {
-            const fullPath = path.join(baseDir, dir, 'chrome-linux64', 'chrome');
-            if (fs.existsSync(fullPath)) {
-                console.log('✅ Found:', fullPath);
-                return fullPath;
-            }
+    for (const p of paths) {
+        if (fs.existsSync(p)) {
+            console.log('✅ Chrome:', p);
+            return p;
         }
     }
     
@@ -43,13 +34,7 @@ const client = new Client({
     puppeteer: {
         headless: true,
         executablePath: CHROME_PATH,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--single-process'
-        ]
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--single-process']
     }
 });
 
@@ -68,13 +53,12 @@ client.on('disconnected', () => {
     client.initialize();
 });
 
-app.get('/', (req, res) => res.json({ online: botReady }));
+app.get('/', (req, res) => res.json({ online: botReady, chrome: CHROME_PATH }));
 app.get('/qr', (req, res) => {
     if (botReady) return res.send('✅ Online');
     if (!qrImage) return res.send('⏳<meta http-equiv="refresh" content="3">');
     res.send(`<img src="${qrImage}" width="300">`);
 });
-app.get('/status', (req, res) => res.json({ online: botReady }));
 
 app.post('/send', async (req, res) => {
     if (!botReady) return res.json({ error: 'Offline' });
