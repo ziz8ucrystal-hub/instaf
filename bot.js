@@ -1,6 +1,8 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const QRCode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
@@ -8,9 +10,45 @@ app.use(express.json());
 let botReady = false;
 let qrImage = '';
 
-// ============ Chrome Path لـ Render ============
-const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
-                   '/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome';
+// ============ البحث عن Chrome تلقائياً ============
+function findChromePath() {
+    const cacheDir = '/opt/render/.cache/puppeteer/chrome';
+    
+    // إذا فيه مسار محدد في البيئة
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+        const customPath = process.env.PUPPETEER_EXECUTABLE_PATH;
+        if (fs.existsSync(customPath)) return customPath;
+    }
+    
+    // البحث في مجلد الكاش
+    if (fs.existsSync(cacheDir)) {
+        const dirs = fs.readdirSync(cacheDir);
+        for (const dir of dirs) {
+            const chromePath = path.join(cacheDir, dir, 'chrome-linux64', 'chrome');
+            if (fs.existsSync(chromePath)) {
+                console.log('✅ Found Chrome at:', chromePath);
+                return chromePath;
+            }
+        }
+    }
+    
+    // تجربة المسارات الشائعة
+    const commonPaths = [
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable'
+    ];
+    
+    for (const p of commonPaths) {
+        if (fs.existsSync(p)) return p;
+    }
+    
+    return undefined;
+}
+
+const chromePath = findChromePath();
+console.log('🔍 Chrome path:', chromePath || 'Not found, using default');
 
 const client = new Client({
     authStrategy: new LocalAuth({ dataPath: './session' }),
@@ -31,7 +69,7 @@ const client = new Client({
 
 client.on('qr', async (qr) => {
     qrImage = await QRCode.toDataURL(qr);
-    console.log('📱 Scan QR at /qr');
+    console.log('📱 QR Ready at /qr');
 });
 
 client.on('ready', () => {
@@ -41,17 +79,16 @@ client.on('ready', () => {
 
 client.on('disconnected', () => {
     botReady = false;
-    client.initialize();
+    setTimeout(() => client.initialize(), 5000);
 });
 
-// ============ Routes ============
 app.get('/', (req, res) => {
-    res.json({ status: botReady ? 'online' : 'offline' });
+    res.json({ status: botReady ? 'online' : 'offline', chrome: chromePath });
 });
 
 app.get('/qr', (req, res) => {
-    if (botReady) return res.send('✅ Online');
-    if (!qrImage) return res.send('⏳ Loading...<meta http-equiv="refresh" content="3">');
+    if (botReady) return res.send('<h1>✅ Online</h1>');
+    if (!qrImage) return res.send('<h1>⏳ Loading...</h1>');
     res.send(`<html><body style="background:#121214;text-align:center;padding:20px"><h1 style="color:#d4f93a">🍁 MapleMail</h1><p style="color:white">امسح QR من واتساب</p><img src="${qrImage}" width="300" style="background:white;padding:15px;border-radius:20px;border:3px solid #d4f93a"><script>setTimeout(()=>location.reload(),30000)</script></body></html>`);
 });
 
@@ -65,7 +102,7 @@ app.post('/send', async (req, res) => {
         const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
         await client.sendMessage(
             `${cleaned}@c.us`,
-            `🍁 *MapleMail*\n\n🔐 *رمز التحقق:* \`${code}\`\n⏰ صالح لمدة 10 دقائق\n🔒 لا تشارك هذا الرمز`
+            `🍁 *MapleMail*\n\n🔐 *رمز التحقق:* \`${code}\`\n⏰ صالح لمدة 10 دقائق`
         );
         res.json({ success: true });
     } catch (e) {
@@ -78,6 +115,4 @@ app.listen(PORT, () => console.log(`🚀 Port: ${PORT}`));
 client.initialize();
 
 // Keep alive
-setInterval(() => {
-    console.log('💚 Alive:', new Date().toISOString());
-}, 300000);
+setInterval(() => console.log('💚 Alive'), 300000);
