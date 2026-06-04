@@ -5,7 +5,8 @@
     "node": "20.x"
   },
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "postinstall": "npx puppeteer browsers install chrome --path $HOME/.cache/puppeteer && cp -r $HOME/.cache/puppeteer /opt/render/project/.puppeteer-cache"
   },
   "dependencies": {
     "express": "^4.18.2",
