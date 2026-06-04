@@ -10,109 +10,83 @@ app.use(express.json());
 let botReady = false;
 let qrImage = '';
 
-// ============ البحث عن Chrome تلقائياً ============
-function findChromePath() {
-    const cacheDir = '/opt/render/.cache/puppeteer/chrome';
-    
-    // إذا فيه مسار محدد في البيئة
-    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-        const customPath = process.env.PUPPETEER_EXECUTABLE_PATH;
-        if (fs.existsSync(customPath)) return customPath;
+// ============ البحث عن Chrome الصحيح ============
+function findChrome() {
+    // المسار الدقيق من اللوق: chrome@127.0.6533.88
+    const exactPath = '/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome';
+    if (fs.existsSync(exactPath)) {
+        console.log('✅ Found:', exactPath);
+        return exactPath;
     }
     
-    // البحث في مجلد الكاش
-    if (fs.existsSync(cacheDir)) {
-        const dirs = fs.readdirSync(cacheDir);
+    // البحث في كل المجلدات
+    const baseDir = '/opt/render/.cache/puppeteer/chrome';
+    if (fs.existsSync(baseDir)) {
+        const dirs = fs.readdirSync(baseDir);
         for (const dir of dirs) {
-            const chromePath = path.join(cacheDir, dir, 'chrome-linux64', 'chrome');
-            if (fs.existsSync(chromePath)) {
-                console.log('✅ Found Chrome at:', chromePath);
-                return chromePath;
+            const fullPath = path.join(baseDir, dir, 'chrome-linux64', 'chrome');
+            if (fs.existsSync(fullPath)) {
+                console.log('✅ Found:', fullPath);
+                return fullPath;
             }
         }
     }
     
-    // تجربة المسارات الشائعة
-    const commonPaths = [
-        '/usr/bin/chromium-browser',
-        '/usr/bin/chromium',
-        '/usr/bin/google-chrome',
-        '/usr/bin/google-chrome-stable'
-    ];
-    
-    for (const p of commonPaths) {
-        if (fs.existsSync(p)) return p;
-    }
-    
+    console.log('❌ Chrome not found');
     return undefined;
 }
 
-const chromePath = findChromePath();
-console.log('🔍 Chrome path:', chromePath || 'Not found, using default');
+const CHROME_PATH = findChrome();
 
 const client = new Client({
     authStrategy: new LocalAuth({ dataPath: './session' }),
     puppeteer: {
         headless: true,
-        executablePath: chromePath,
+        executablePath: CHROME_PATH,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             '--disable-gpu',
-            '--single-process',
-            '--disable-accelerated-2d-canvas',
-            '--disable-web-security'
+            '--single-process'
         ]
     }
 });
 
 client.on('qr', async (qr) => {
     qrImage = await QRCode.toDataURL(qr);
-    console.log('📱 QR Ready at /qr');
+    console.log('📱 /qr');
 });
 
 client.on('ready', () => {
     botReady = true;
-    console.log('✅ MapleMail Online!');
+    console.log('✅ Online!');
 });
 
 client.on('disconnected', () => {
     botReady = false;
-    setTimeout(() => client.initialize(), 5000);
+    client.initialize();
 });
 
-app.get('/', (req, res) => {
-    res.json({ status: botReady ? 'online' : 'offline', chrome: chromePath });
-});
-
+app.get('/', (req, res) => res.json({ online: botReady }));
 app.get('/qr', (req, res) => {
-    if (botReady) return res.send('<h1>✅ Online</h1>');
-    if (!qrImage) return res.send('<h1>⏳ Loading...</h1>');
-    res.send(`<html><body style="background:#121214;text-align:center;padding:20px"><h1 style="color:#d4f93a">🍁 MapleMail</h1><p style="color:white">امسح QR من واتساب</p><img src="${qrImage}" width="300" style="background:white;padding:15px;border-radius:20px;border:3px solid #d4f93a"><script>setTimeout(()=>location.reload(),30000)</script></body></html>`);
+    if (botReady) return res.send('✅ Online');
+    if (!qrImage) return res.send('⏳<meta http-equiv="refresh" content="3">');
+    res.send(`<img src="${qrImage}" width="300">`);
 });
-
 app.get('/status', (req, res) => res.json({ online: botReady }));
 
 app.post('/send', async (req, res) => {
+    if (!botReady) return res.json({ error: 'Offline' });
     const { phone, code } = req.body;
-    if (!botReady) return res.json({ success: false, error: 'Bot offline' });
-    
     try {
-        const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
-        await client.sendMessage(
-            `${cleaned}@c.us`,
-            `🍁 *MapleMail*\n\n🔐 *رمز التحقق:* \`${code}\`\n⏰ صالح لمدة 10 دقائق`
-        );
+        await client.sendMessage(`${phone.replace(/\D/g,'')}@c.us`, `🍁 *MapleMail*\n\n🔐 *${code}*`);
         res.json({ success: true });
-    } catch (e) {
+    } catch(e) {
         res.json({ success: false, error: e.message });
     }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Port: ${PORT}`));
+app.listen(process.env.PORT || 10000, () => console.log('🚀 Ready'));
 client.initialize();
-
-// Keep alive
-setInterval(() => console.log('💚 Alive'), 300000);
+setInterval(() => console.log('💚'), 300000);
